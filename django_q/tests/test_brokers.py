@@ -120,9 +120,7 @@ def test_disque(monkeypatch):
         broker.get_connection()
 
 
-@pytest.mark.skipif(
-    not os.getenv("IRON_MQ_TOKEN"), reason="requires IronMQ credentials"
-)
+@pytest.mark.skipif(not os.getenv("IRON_MQ_TOKEN"), reason="requires IronMQ credentials")
 def test_ironmq(monkeypatch):
     monkeypatch.setattr(
         Conf,
@@ -183,9 +181,7 @@ def test_ironmq(monkeypatch):
     broker.delete_queue()
 
 
-@pytest.mark.skipif(
-    not os.getenv("AWS_ACCESS_KEY_ID"), reason="requires AWS credentials"
-)
+@pytest.mark.skipif(not os.getenv("AWS_ACCESS_KEY_ID"), reason="requires AWS credentials")
 def canceled_sqs(monkeypatch):
     monkeypatch.setattr(
         Conf,

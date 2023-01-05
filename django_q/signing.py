@@ -22,9 +22,7 @@ class SignedPackage:
 
     @staticmethod
     def loads(obj) -> any:
-        return signing.loads(
-            obj, key=Conf.SECRET_KEY, salt=Conf.PREFIX, serializer=PickleSerializer
-        )
+        return signing.loads(obj, key=Conf.SECRET_KEY, salt=Conf.PREFIX, serializer=PickleSerializer)
 
 
 class PickleSerializer:

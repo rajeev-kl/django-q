@@ -51,9 +51,7 @@ class Queue(multiprocessing.queues.Queue):
         if sys.version_info < (3, 0):
             super(Queue, self).__init__(*args, **kwargs)
         else:
-            super(Queue, self).__init__(
-                *args, ctx=multiprocessing.get_context(), **kwargs
-            )
+            super(Queue, self).__init__(*args, ctx=multiprocessing.get_context(), **kwargs)
         self.size = SharedCounter(0)
 
     def __getstate__(self):

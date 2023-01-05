@@ -1,0 +1,124 @@
+.
+├── CHANGELOG.md
+├── dir.tree
+├── django_q
+│   ├── admin.py
+│   ├── apps.py
+│   ├── brokers
+│   │   ├── aws_sqs.py
+│   │   ├── disque.py
+│   │   ├── __init__.py
+│   │   ├── ironmq.py
+│   │   ├── mongo.py
+│   │   ├── orm.py
+│   │   └── redis_broker.py
+│   ├── cluster.py
+│   ├── conf.py
+│   ├── core_signing.py
+│   ├── humanhash.py
+│   ├── __init__.py
+│   ├── locale
+│   │   ├── de
+│   │   │   └── LC_MESSAGES
+│   │   │       ├── django.mo
+│   │   │       └── django.po
+│   │   └── fr
+│   │       └── LC_MESSAGES
+│   │           ├── django.mo
+│   │           └── django.po
+│   ├── management
+│   │   ├── commands
+│   │   │   ├── __init__.py
+│   │   │   ├── qcluster.py
+│   │   │   ├── qinfo.py
+│   │   │   ├── qmemory.py
+│   │   │   └── qmonitor.py
+│   │   └── __init__.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   ├── 0002_auto_20150630_1624.py
+│   │   ├── 0003_auto_20150708_1326.py
+│   │   ├── 0004_auto_20150710_1043.py
+│   │   ├── 0005_auto_20150718_1506.py
+│   │   ├── 0006_auto_20150805_1817.py
+│   │   ├── 0007_ormq.py
+│   │   ├── 0008_auto_20160224_1026.py
+│   │   ├── 0009_auto_20171009_0915.py
+│   │   ├── 0010_auto_20200610_0856.py
+│   │   ├── 0011_auto_20200628_1055.py
+│   │   ├── 0012_auto_20200702_1608.py
+│   │   ├── 0013_task_attempt_count.py
+│   │   ├── 0014_schedule_cluster.py
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── monitor.py
+│   ├── queues.py
+│   ├── signals.py
+│   ├── signing.py
+│   ├── status.py
+│   ├── tasks.py
+│   └── tests
+│       ├── __init__.py
+│       ├── settings.py
+│       ├── tasks.py
+│       ├── test_admin.py
+│       ├── test_brokers.py
+│       ├── test_cached.py
+│       ├── test_cluster.py
+│       ├── test_commands.py
+│       ├── testing_utilities
+│       │   ├── __init__.py
+│       │   └── multiple_database_routers.py
+│       ├── test_monitor.py
+│       ├── test_scheduler.py
+│       └── urls.py
+├── Dockerfile.dev
+├── docs
+│   ├── admin.rst
+│   ├── architecture.rst
+│   ├── brokers.rst
+│   ├── chain.rst
+│   ├── cluster.rst
+│   ├── configure.rst
+│   ├── conf.py
+│   ├── errors.rst
+│   ├── examples.rst
+│   ├── group.rst
+│   ├── index.rst
+│   ├── install.rst
+│   ├── iterable.rst
+│   ├── Makefile
+│   ├── monitor.rst
+│   ├── schedules.rst
+│   ├── signals.rst
+│   ├── _static
+│   │   ├── cluster.png
+│   │   ├── favicon.ico
+│   │   ├── info.png
+│   │   ├── logo_large.png
+│   │   ├── logo.png
+│   │   ├── monitor.png
+│   │   ├── scheduled.png
+│   │   └── successful.png
+│   └── tasks.rst
+├── formatter.sh
+├── .github
+│   ├── FUNDING.yml
+│   ├── release-drafter.yml
+│   └── workflows
+│       ├── codeql-analysis.yml
+│       ├── release_log.yml
+│       └── test.yml
+├── .gitignore
+├── LICENSE
+├── Pipfile
+├── Pipfile.lock
+├── poetry.lock
+├── pyproject.toml
+├── pytest.ini
+├── README.rst
+├── .readthedocs.yml
+├── requirements.txt
+└── test-services-docker-compose.yaml
+
+16 directories, 105 files

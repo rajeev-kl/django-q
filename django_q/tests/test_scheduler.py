@@ -12,7 +12,7 @@ from django.utils import timezone
 from django.utils.timezone import is_naive
 
 from django_q.brokers import Broker, get_broker
-from django_q.cluster import monitor, pusher, scheduler, worker, localtime
+from django_q.cluster import localtime, monitor, pusher, scheduler, worker
 from django_q.conf import Conf
 from django_q.queues import Queue
 from django_q.tasks import Schedule, fetch
@@ -51,9 +51,7 @@ def orm_replica_broker(orm_broker, monkeypatch) -> Broker:
     return get_broker(list_key="scheduler_test:q")
 
 
-REPLICA_DATABASE_ROUTERS = [
-    f"{TestingReplicaDatabaseRouter.__module__}.{TestingReplicaDatabaseRouter.__name__}"
-]
+REPLICA_DATABASE_ROUTERS = [f"{TestingReplicaDatabaseRouter.__module__}.{TestingReplicaDatabaseRouter.__name__}"]
 REPLICA_DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -278,9 +276,7 @@ def test_scheduler(broker, monkeypatch):
     assert task_queue.qsize() == 1
 
 
-@override_settings(
-    DATABASE_ROUTERS=REPLICA_DATABASE_ROUTERS, DATABASES=REPLICA_DATABASES
-)
+@override_settings(DATABASE_ROUTERS=REPLICA_DATABASE_ROUTERS, DATABASES=REPLICA_DATABASES)
 @pytest.mark.django_db
 def test_scheduler_atomic_transaction_must_specify_a_database_when_no_replicas_are_used(
     orm_no_replica_broker: Broker,
@@ -297,9 +293,7 @@ def test_scheduler_atomic_transaction_must_specify_a_database_when_no_replicas_a
         mocked_db.transaction.atomic.assert_called_with(using=broker.connection.db)
 
 
-@override_settings(
-    DATABASE_ROUTERS=REPLICA_DATABASE_ROUTERS, DATABASES=REPLICA_DATABASES
-)
+@override_settings(DATABASE_ROUTERS=REPLICA_DATABASE_ROUTERS, DATABASES=REPLICA_DATABASES)
 @pytest.mark.django_db
 def test_scheduler_atomic_transaction_must_specify_no_database_when_read_write_replicas_are_used(
     orm_replica_broker: Broker,
@@ -315,9 +309,7 @@ def test_scheduler_atomic_transaction_must_specify_no_database_when_read_write_r
         mocked_db.transaction.atomic.assert_called_with()
 
 
-@override_settings(
-    DATABASE_ROUTERS=MULTIPLE_APPS_DATABASE_ROUTERS, DATABASES=MULTIPLE_APPS_DATABASES
-)
+@override_settings(DATABASE_ROUTERS=MULTIPLE_APPS_DATABASE_ROUTERS, DATABASES=MULTIPLE_APPS_DATABASES)
 @pytest.mark.django_db
 def test_scheduler_atomic_transaction_must_specify_the_database_based_on_router_redirection(
     orm_no_replica_broker: Broker,

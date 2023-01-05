@@ -17,9 +17,7 @@ def _timeout():
 class ORM(Broker):
     @staticmethod
     def get_connection(list_key: str = Conf.PREFIX):
-        if transaction.get_autocommit(
-            using=Conf.ORM
-        ):  # Only True when not in an atomic block
+        if transaction.get_autocommit(using=Conf.ORM):  # Only True when not in an atomic block
             # Make sure stale connections in the broker thread are explicitly
             #   closed before attempting DB access.
             # logger.debug("Broker thread calling close_old_connections")
@@ -29,16 +27,10 @@ class ORM(Broker):
         return OrmQ.objects.using(Conf.ORM)
 
     def queue_size(self) -> int:
-        return (
-            self.get_connection()
-            .filter(key=self.list_key, lock__lte=_timeout())
-            .count()
-        )
+        return self.get_connection().filter(key=self.list_key, lock__lte=_timeout()).count()
 
     def lock_size(self) -> int:
-        return (
-            self.get_connection().filter(key=self.list_key, lock__gt=_timeout()).count()
-        )
+        return self.get_connection().filter(key=self.list_key, lock__gt=_timeout()).count()
 
     def purge_queue(self):
         return self.get_connection().filter(key=self.list_key).delete()
@@ -55,23 +47,15 @@ class ORM(Broker):
         self.delete(task_id)
 
     def enqueue(self, task):
-        package = self.get_connection().create(
-            key=self.list_key, payload=task, lock=_timeout()
-        )
+        package = self.get_connection().create(key=self.list_key, payload=task, lock=_timeout())
         return package.pk
 
     def dequeue(self):
-        tasks = self.get_connection().filter(key=self.list_key, lock__lt=_timeout())[
-            0 : Conf.BULK
-        ]
+        tasks = self.get_connection().filter(key=self.list_key, lock__lt=_timeout())[0 : Conf.BULK]
         if tasks:
             task_list = []
             for task in tasks:
-                if (
-                    self.get_connection()
-                    .filter(id=task.id, lock=task.lock)
-                    .update(lock=timezone.now())
-                ):
+                if self.get_connection().filter(id=task.id, lock=task.lock).update(lock=timezone.now()):
                     task_list.append((task.pk, task.payload))
                 # else don't process, as another cluster has been faster than us on that task
             return task_list

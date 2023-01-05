@@ -18,18 +18,12 @@ def call_hook(sender, instance, **kwargs):
                 m = importlib.import_module(module)
                 f = getattr(m, func)
             except (ValueError, ImportError, AttributeError):
-                logger.error(
-                    _(f"malformed return hook '{instance.hook}' for [{instance.name}]")
-                )
+                logger.error(_(f"malformed return hook '{instance.hook}' for [{instance.name}]"))
                 return
         try:
             f(instance)
         except Exception as e:
-            logger.error(
-                _(
-                    f"return hook {instance.hook} failed on [{instance.name}] because {str(e)}"
-                )
-            )
+            logger.error(_(f"return hook {instance.hook} failed on [{instance.name}] because {str(e)}"))
 
 
 # args: task

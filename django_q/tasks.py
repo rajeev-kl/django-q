@@ -39,9 +39,7 @@ def async_task(func, *args, **kwargs):
     # build the task package
     task = {
         "id": tag[1],
-        "name": keywords.pop("task_name", None)
-        or q_options.pop("task_name", None)
-        or tag[0],
+        "name": keywords.pop("task_name", None) or q_options.pop("task_name", None) or tag[0],
         "func": func,
         "args": args,
     }
@@ -182,11 +180,7 @@ def result_group(group_id, failures=False, wait=0, count=None, cached=Conf.CACHE
     start = time()
     if count:
         while True:
-            if (
-                count_group(group_id) == count
-                or wait
-                and (time() - start) * 1000 >= wait >= 0
-            ):
+            if count_group(group_id) == count or wait and (time() - start) * 1000 >= wait >= 0:
                 break
             sleep(0.01)
     while True:
@@ -207,11 +201,7 @@ def result_group_cached(group_id, failures=False, wait=0, count=None, broker=Non
     start = time()
     if count:
         while True:
-            if (
-                count_group_cached(group_id) == count
-                or wait
-                and (time() - start) * 1000 >= wait > 0
-            ):
+            if count_group_cached(group_id) == count or wait and (time() - start) * 1000 >= wait > 0:
                 break
             sleep(0.01)
     while True:
@@ -294,11 +284,7 @@ def fetch_group(group_id, failures=True, wait=0, count=None, cached=Conf.CACHED)
     start = time()
     if count:
         while True:
-            if (
-                count_group(group_id) == count
-                or wait
-                and (time() - start) * 1000 >= wait >= 0
-            ):
+            if count_group(group_id) == count or wait and (time() - start) * 1000 >= wait >= 0:
                 break
             sleep(0.01)
     while True:
@@ -319,11 +305,7 @@ def fetch_group_cached(group_id, failures=True, wait=0, count=None, broker=None)
     start = time()
     if count:
         while True:
-            if (
-                count_group_cached(group_id) == count
-                or wait
-                and (time() - start) * 1000 >= wait >= 0
-            ):
+            if count_group_cached(group_id) == count or wait and (time() - start) * 1000 >= wait >= 0:
                 break
             sleep(0.01)
     while True:
@@ -453,9 +435,7 @@ def async_iter(func, args_iter, **kwargs):
     options["cached"] = True
     # save the original arguments
     broker = options["broker"]
-    broker.cache.set(
-        f"{broker.list_key}:{iter_group}:args", SignedPackage.dumps(args_iter)
-    )
+    broker.cache.set(f"{broker.list_key}:{iter_group}:args", SignedPackage.dumps(args_iter))
     for args in args_iter:
         if not isinstance(args, tuple):
             args = (args,)
@@ -605,9 +585,7 @@ class Chain:
         :return: an unsorted list of results
         """
         if self.started:
-            return result_group(
-                self.group, wait=wait, count=self.length(), cached=self.cached
-            )
+            return result_group(self.group, wait=wait, count=self.length(), cached=self.cached)
 
     def fetch(self, failures=True, wait=0):
         """

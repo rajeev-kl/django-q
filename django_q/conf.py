@@ -186,11 +186,7 @@ class Conf:
         QSIZE = False
 
     # Getting the signal names
-    SIGNAL_NAMES = dict(
-        (getattr(signal, n), n)
-        for n in dir(signal)
-        if n.startswith("SIG") and "_" not in n
-    )
+    SIGNAL_NAMES = dict((getattr(signal, n), n) for n in dir(signal) if n.startswith("SIG") and "_" not in n)
 
     # Translators: Cluster status descriptions
     STARTING = _("Starting")
@@ -210,9 +206,7 @@ logger = logging.getLogger("django-q")
 if not logger.handlers:
     logger.setLevel(level=getattr(logging, Conf.LOG_LEVEL))
     logger.propagate = False
-    formatter = logging.Formatter(
-        fmt="%(asctime)s [Q] %(levelname)s %(message)s", datefmt="%H:%M:%S"
-    )
+    formatter = logging.Formatter(fmt="%(asctime)s [Q] %(levelname)s %(message)s", datefmt="%H:%M:%S")
     handler = logging.StreamHandler()
     handler.setFormatter(formatter)
     logger.addHandler(handler)
@@ -239,9 +233,7 @@ if Conf.ERROR_REPORTER:
         # iterate through the configured error reporters,
         # and instantiate an ErrorReporter using the provided config
         for name, conf in error_conf.items():
-            for entry in pkg_resources.iter_entry_points(
-                "djangoq.errorreporters", name
-            ):
+            for entry in pkg_resources.iter_entry_points("djangoq.errorreporters", name):
                 Reporter = entry.load()
                 reporters.append(Reporter(**conf))
         error_reporter = ErrorReporter(reporters)
@@ -258,6 +250,4 @@ def get_ppid():
     elif psutil:
         return psutil.Process(os.getpid()).ppid()
     else:
-        raise OSError(
-            "Your OS does not support `os.getppid`. Please install `psutil` as an alternative provider."
-        )
+        raise OSError("Your OS does not support `os.getppid`. Please install `psutil` as an alternative provider.")

@@ -54,9 +54,7 @@ def test_redis_connection(broker):
 
 @pytest.mark.django_db
 def test_sync(broker):
-    task = async_task(
-        "django_q.tests.tasks.count_letters", DEFAULT_WORDLIST, broker=broker, sync=True
-    )
+    task = async_task("django_q.tests.tasks.count_letters", DEFAULT_WORDLIST, broker=broker, sync=True)
     assert result(task) == 1506
 
 
@@ -108,9 +106,7 @@ def test_sentinel():
 def test_cluster(broker):
     broker.list_key = "cluster_test:q"
     broker.delete_queue()
-    task = async_task(
-        "django_q.tests.tasks.count_letters", DEFAULT_WORDLIST, broker=broker
-    )
+    task = async_task("django_q.tests.tasks.count_letters", DEFAULT_WORDLIST, broker=broker)
     assert broker.queue_size() == 1
     task_queue = Queue()
     assert task_queue.qsize() == 0
@@ -172,9 +168,7 @@ def test_enqueue(broker, admin_user):
     # function as instance
     f = async_task(multiply, 753, 2, hook=assert_result, broker=broker)
     # model as argument
-    g = async_task(
-        "django_q.tests.tasks.get_task_name", Task(name="John"), broker=broker
-    )
+    g = async_task("django_q.tests.tasks.get_task_name", Task(name="John"), broker=broker)
     # args,kwargs, group and broken hook
     h = async_task(
         "django_q.tests.tasks.word_multiply",
@@ -184,9 +178,7 @@ def test_enqueue(broker, admin_user):
         broker=broker,
     )
     # args unpickle test
-    j = async_task(
-        "django_q.tests.tasks.get_user_id", admin_user, broker=broker, group="test_j"
-    )
+    j = async_task("django_q.tests.tasks.get_user_id", admin_user, broker=broker, group="test_j")
     # q_options and save opt_out test
     k = async_task(
         "django_q.tests.tasks.get_user_id",
@@ -451,9 +443,7 @@ def test_bad_secret(broker, monkeypatch):
     stop_event.set()
     start_event = Event()
     cluster_id = uuidlib.uuid4()
-    s = Sentinel(
-        stop_event, start_event, cluster_id=cluster_id, broker=broker, start=False
-    )
+    s = Sentinel(stop_event, start_event, cluster_id=cluster_id, broker=broker, start=False)
     Stat(s).save()
     # change the SECRET
     monkeypatch.setattr(Conf, "SECRET_KEY", "OOPS")
@@ -581,9 +571,7 @@ def test_acknowledge_failure_override():
 
     tag = uuid()
     task_fail_no_ack = task_fail_ack.copy()
-    task_fail_no_ack.update(
-        {"id": tag[1], "name": tag[0], "ack_id": "test_fail_no_ack_id"}
-    )
+    task_fail_no_ack.update({"id": tag[1], "name": tag[0], "ack_id": "test_fail_no_ack_id"})
     del task_fail_no_ack["ack_failure"]
 
     tag = uuid()

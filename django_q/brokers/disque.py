@@ -14,14 +14,10 @@ from django_q.conf import Conf
 class Disque(Broker):
     def enqueue(self, task):
         retry = Conf.RETRY if Conf.RETRY > 0 else f"{Conf.RETRY} REPLICATE 1"
-        return self.connection.execute_command(
-            f"ADDJOB {self.list_key} {task} 500 RETRY {retry}"
-        ).decode()
+        return self.connection.execute_command(f"ADDJOB {self.list_key} {task} 500 RETRY {retry}").decode()
 
     def dequeue(self):
-        tasks = self.connection.execute_command(
-            f"GETJOB COUNT {Conf.BULK} TIMEOUT 1000 FROM {self.list_key}"
-        )
+        tasks = self.connection.execute_command(f"GETJOB COUNT {Conf.BULK} TIMEOUT 1000 FROM {self.list_key}")
         if tasks:
             return [(t[1].decode(), t[2].decode()) for t in tasks]
 
@@ -73,6 +69,4 @@ class Disque(Broker):
                 return redis_client
             except redis.exceptions.ConnectionError:
                 continue
-        raise redis.exceptions.ConnectionError(
-            _("Could not connect to any Disque nodes")
-        )
+        raise redis.exceptions.ConnectionError(_("Could not connect to any Disque nodes"))

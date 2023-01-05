@@ -56,15 +56,11 @@ class Mongo(Broker):
         self.delete(task_id)
 
     def enqueue(self, task):
-        inserted_id = self.collection.insert_one(
-            {"payload": task, "lock": _timeout()}
-        ).inserted_id
+        inserted_id = self.collection.insert_one({"payload": task, "lock": _timeout()}).inserted_id
         return str(inserted_id)
 
     def dequeue(self):
-        task = self.collection.find_one_and_update(
-            {"lock": {"$lte": _timeout()}}, {"$set": {"lock": timezone.now()}}
-        )
+        task = self.collection.find_one_and_update({"lock": {"$lte": _timeout()}}, {"$set": {"lock": timezone.now()}})
         if task:
             return [(str(task["_id"]), task["payload"])]
         # empty queue, spare the cpu

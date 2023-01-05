@@ -39,9 +39,7 @@ class Command(BaseCommand):
                 "SIGNAL_NAMES",
                 "STOPPED",
             ]
-            settings = [
-                a for a in dir(Conf) if not a.startswith("__") and a not in hide
-            ]
+            settings = [a for a in dir(Conf) if not a.startswith("__") and a not in hide]
             self.stdout.write(f"VERSION: {'.'.join(str(v) for v in VERSION)}")
             for setting in settings:
                 value = getattr(Conf, setting)

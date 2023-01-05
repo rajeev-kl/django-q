@@ -26,7 +26,7 @@ except ImportError:
 def get_process_mb(pid):
     try:
         process = psutil.Process(pid)
-        mb_used = round(process.memory_info().rss / 1024 ** 2, 2)
+        mb_used = round(process.memory_info().rss / 1024**2, 2)
     except psutil.NoSuchProcess:
         mb_used = "NO_PROCESS_FOUND"
     return mb_used
@@ -49,38 +49,14 @@ def monitor(run_once=False, broker=None):
             if col_width != start_width:
                 print(term.clear())
                 start_width = col_width
-            print(
-                term.move(0, 0)
-                + term.black_on_green(term.center(_("Host"), width=col_width - 1))
-            )
-            print(
-                term.move(0, 1 * col_width)
-                + term.black_on_green(term.center(_("Id"), width=col_width - 1))
-            )
-            print(
-                term.move(0, 2 * col_width)
-                + term.black_on_green(term.center(_("State"), width=col_width - 1))
-            )
-            print(
-                term.move(0, 3 * col_width)
-                + term.black_on_green(term.center(_("Pool"), width=col_width - 1))
-            )
-            print(
-                term.move(0, 4 * col_width)
-                + term.black_on_green(term.center(_("TQ"), width=col_width - 1))
-            )
-            print(
-                term.move(0, 5 * col_width)
-                + term.black_on_green(term.center(_("RQ"), width=col_width - 1))
-            )
-            print(
-                term.move(0, 6 * col_width)
-                + term.black_on_green(term.center(_("RC"), width=col_width - 1))
-            )
-            print(
-                term.move(0, 7 * col_width)
-                + term.black_on_green(term.center(_("Up"), width=col_width - 1))
-            )
+            print(term.move(0, 0) + term.black_on_green(term.center(_("Host"), width=col_width - 1)))
+            print(term.move(0, 1 * col_width) + term.black_on_green(term.center(_("Id"), width=col_width - 1)))
+            print(term.move(0, 2 * col_width) + term.black_on_green(term.center(_("State"), width=col_width - 1)))
+            print(term.move(0, 3 * col_width) + term.black_on_green(term.center(_("Pool"), width=col_width - 1)))
+            print(term.move(0, 4 * col_width) + term.black_on_green(term.center(_("TQ"), width=col_width - 1)))
+            print(term.move(0, 5 * col_width) + term.black_on_green(term.center(_("RQ"), width=col_width - 1)))
+            print(term.move(0, 6 * col_width) + term.black_on_green(term.center(_("RC"), width=col_width - 1)))
+            print(term.move(0, 7 * col_width) + term.black_on_green(term.center(_("Up"), width=col_width - 1)))
             i = 2
             stats = Stat.get_all(broker=broker)
             print(term.clear_eos())
@@ -114,38 +90,14 @@ def monitor(run_once=False, broker=None):
                 minutes, seconds = divmod(remainder, 60)
                 uptime = "%d:%02d:%02d" % (hours, minutes, seconds)
                 # print to the terminal
-                print(
-                    term.move(i, 0)
-                    + term.center(stat.host[: col_width - 1], width=col_width - 1)
-                )
-                print(
-                    term.move(i, 1 * col_width)
-                    + term.center(str(stat.cluster_id)[-8:], width=col_width - 1)
-                )
-                print(
-                    term.move(i, 2 * col_width)
-                    + term.center(status, width=col_width - 1)
-                )
-                print(
-                    term.move(i, 3 * col_width)
-                    + term.center(workers, width=col_width - 1)
-                )
-                print(
-                    term.move(i, 4 * col_width)
-                    + term.center(tasks, width=col_width - 1)
-                )
-                print(
-                    term.move(i, 5 * col_width)
-                    + term.center(results, width=col_width - 1)
-                )
-                print(
-                    term.move(i, 6 * col_width)
-                    + term.center(stat.reincarnations, width=col_width - 1)
-                )
-                print(
-                    term.move(i, 7 * col_width)
-                    + term.center(uptime, width=col_width - 1)
-                )
+                print(term.move(i, 0) + term.center(stat.host[: col_width - 1], width=col_width - 1))
+                print(term.move(i, 1 * col_width) + term.center(str(stat.cluster_id)[-8:], width=col_width - 1))
+                print(term.move(i, 2 * col_width) + term.center(status, width=col_width - 1))
+                print(term.move(i, 3 * col_width) + term.center(workers, width=col_width - 1))
+                print(term.move(i, 4 * col_width) + term.center(tasks, width=col_width - 1))
+                print(term.move(i, 5 * col_width) + term.center(results, width=col_width - 1))
+                print(term.move(i, 6 * col_width) + term.center(stat.reincarnations, width=col_width - 1))
+                print(term.move(i, 7 * col_width) + term.center(uptime, width=col_width - 1))
                 i += 1
             # bottom bar
             i += 1
@@ -153,37 +105,18 @@ def monitor(run_once=False, broker=None):
             lock_size = broker.lock_size()
             if lock_size:
                 queue_size = f"{queue_size}({lock_size})"
-            print(
-                term.move(i, 0)
-                + term.white_on_cyan(term.center(broker.info(), width=col_width * 2))
-            )
-            print(
-                term.move(i, 2 * col_width)
-                + term.black_on_cyan(term.center(_("Queued"), width=col_width))
-            )
-            print(
-                term.move(i, 3 * col_width)
-                + term.white_on_cyan(term.center(queue_size, width=col_width))
-            )
-            print(
-                term.move(i, 4 * col_width)
-                + term.black_on_cyan(term.center(_("Success"), width=col_width))
-            )
+            print(term.move(i, 0) + term.white_on_cyan(term.center(broker.info(), width=col_width * 2)))
+            print(term.move(i, 2 * col_width) + term.black_on_cyan(term.center(_("Queued"), width=col_width)))
+            print(term.move(i, 3 * col_width) + term.white_on_cyan(term.center(queue_size, width=col_width)))
+            print(term.move(i, 4 * col_width) + term.black_on_cyan(term.center(_("Success"), width=col_width)))
             print(
                 term.move(i, 5 * col_width)
-                + term.white_on_cyan(
-                    term.center(models.Success.objects.count(), width=col_width)
-                )
+                + term.white_on_cyan(term.center(models.Success.objects.count(), width=col_width))
             )
-            print(
-                term.move(i, 6 * col_width)
-                + term.black_on_cyan(term.center(_("Failures"), width=col_width))
-            )
+            print(term.move(i, 6 * col_width) + term.black_on_cyan(term.center(_("Failures"), width=col_width)))
             print(
                 term.move(i, 7 * col_width)
-                + term.white_on_cyan(
-                    term.center(models.Failure.objects.count(), width=col_width)
-                )
+                + term.white_on_cyan(term.center(models.Failure.objects.count(), width=col_width))
             )
             # for testing
             if run_once:
@@ -209,16 +142,12 @@ def info(broker=None):
     tasks_per = 0
     per = _("day")
     exec_time = 0
-    last_tasks = models.Success.objects.filter(
-        stopped__gte=timezone.now() - timedelta(hours=24)
-    )
+    last_tasks = models.Success.objects.filter(stopped__gte=timezone.now() - timedelta(hours=24))
     tasks_per_day = last_tasks.count()
     if tasks_per_day > 0:
         # average execution time over the last 24 hours
         if connection.vendor != "sqlite":
-            exec_time = last_tasks.aggregate(
-                time_taken=Sum(F("stopped") - F("started"))
-            )
+            exec_time = last_tasks.aggregate(time_taken=Sum(F("stopped") - F("started")))
             exec_time = exec_time["time_taken"].total_seconds() / tasks_per_day
         else:
             # can't sum timedeltas on sqlite
@@ -242,11 +171,7 @@ def info(broker=None):
     col_width = int(term.width / 6)
     print(
         term.black_on_green(
-            term.center(
-                _(
-                    f'-- {Conf.PREFIX.capitalize()} { ".".join(str(v) for v in VERSION)} on {broker.info()}  --'
-                )
-            )
+            term.center(_(f'-- {Conf.PREFIX.capitalize()} { ".".join(str(v) for v in VERSION)} on {broker.info()}  --'))
         )
     )
     print(
@@ -298,11 +223,7 @@ def memory(run_once=False, workers=False, broker=None):
     broker.ping()
     if not psutil:
         print(term.clear_eos())
-        print(
-            term.white_on_red(
-                'Cannot start "qmemory" command. Missing "psutil" library.'
-            )
-        )
+        print(term.white_on_red('Cannot start "qmemory" command. Missing "psutil" library.'))
         return
     with term.fullscreen(), term.hidden_cursor(), term.cbreak():
         MEMORY_AVAILABLE_LOWEST_PERCENTAGE = 100.0
@@ -317,47 +238,23 @@ def memory(run_once=False, workers=False, broker=None):
                 print(term.clear())
                 start_width = col_width
             # sentinel, monitor and workers memory usage
+            print(term.move(0, 0 * col_width) + term.black_on_green(term.center(_("Host"), width=col_width - 1)))
+            print(term.move(0, 1 * col_width) + term.black_on_green(term.center(_("Id"), width=col_width - 1)))
             print(
-                term.move(0, 0 * col_width)
-                + term.black_on_green(term.center(_("Host"), width=col_width - 1))
+                term.move(0, 2 * col_width) + term.black_on_green(term.center(_("Available (%)"), width=col_width - 1))
             )
             print(
-                term.move(0, 1 * col_width)
-                + term.black_on_green(term.center(_("Id"), width=col_width - 1))
+                term.move(0, 3 * col_width) + term.black_on_green(term.center(_("Available (MB)"), width=col_width - 1))
+            )
+            print(term.move(0, 4 * col_width) + term.black_on_green(term.center(_("Total (MB)"), width=col_width - 1)))
+            print(
+                term.move(0, 5 * col_width) + term.black_on_green(term.center(_("Sentinel (MB)"), width=col_width - 1))
             )
             print(
-                term.move(0, 2 * col_width)
-                + term.black_on_green(
-                    term.center(_("Available (%)"), width=col_width - 1)
-                )
+                term.move(0, 6 * col_width) + term.black_on_green(term.center(_("Monitor (MB)"), width=col_width - 1))
             )
             print(
-                term.move(0, 3 * col_width)
-                + term.black_on_green(
-                    term.center(_("Available (MB)"), width=col_width - 1)
-                )
-            )
-            print(
-                term.move(0, 4 * col_width)
-                + term.black_on_green(term.center(_("Total (MB)"), width=col_width - 1))
-            )
-            print(
-                term.move(0, 5 * col_width)
-                + term.black_on_green(
-                    term.center(_("Sentinel (MB)"), width=col_width - 1)
-                )
-            )
-            print(
-                term.move(0, 6 * col_width)
-                + term.black_on_green(
-                    term.center(_("Monitor (MB)"), width=col_width - 1)
-                )
-            )
-            print(
-                term.move(0, 7 * col_width)
-                + term.black_on_green(
-                    term.center(_("Workers (MB)"), width=col_width - 1)
-                )
+                term.move(0, 7 * col_width) + term.black_on_green(term.center(_("Workers (MB)"), width=col_width - 1))
             )
             row = 2
             stats = Stat.get_all(broker=broker)
@@ -365,45 +262,26 @@ def memory(run_once=False, workers=False, broker=None):
             for stat in stats:
                 # memory available (%)
                 memory_available_percentage = round(
-                    psutil.virtual_memory().available
-                    * 100
-                    / psutil.virtual_memory().total,
+                    psutil.virtual_memory().available * 100 / psutil.virtual_memory().total,
                     2,
                 )
                 # memory available (MB)
-                memory_available = round(
-                    psutil.virtual_memory().available / 1024 ** 2, 2
-                )
+                memory_available = round(psutil.virtual_memory().available / 1024**2, 2)
                 if memory_available_percentage < MEMORY_AVAILABLE_LOWEST_PERCENTAGE:
                     MEMORY_AVAILABLE_LOWEST_PERCENTAGE = memory_available_percentage
                     MEMORY_AVAILABLE_LOWEST_PERCENTAGE_AT = timezone.now()
-                print(
-                    term.move(row, 0 * col_width)
-                    + term.center(stat.host[: col_width - 1], width=col_width - 1)
-                )
-                print(
-                    term.move(row, 1 * col_width)
-                    + term.center(str(stat.cluster_id)[-8:], width=col_width - 1)
-                )
-                print(
-                    term.move(row, 2 * col_width)
-                    + term.center(memory_available_percentage, width=col_width - 1)
-                )
-                print(
-                    term.move(row, 3 * col_width)
-                    + term.center(memory_available, width=col_width - 1)
-                )
+                print(term.move(row, 0 * col_width) + term.center(stat.host[: col_width - 1], width=col_width - 1))
+                print(term.move(row, 1 * col_width) + term.center(str(stat.cluster_id)[-8:], width=col_width - 1))
+                print(term.move(row, 2 * col_width) + term.center(memory_available_percentage, width=col_width - 1))
+                print(term.move(row, 3 * col_width) + term.center(memory_available, width=col_width - 1))
                 print(
                     term.move(row, 4 * col_width)
                     + term.center(
-                        round(psutil.virtual_memory().total / 1024 ** 2, 2),
+                        round(psutil.virtual_memory().total / 1024**2, 2),
                         width=col_width - 1,
                     )
                 )
-                print(
-                    term.move(row, 5 * col_width)
-                    + term.center(get_process_mb(stat.sentinel), width=col_width - 1)
-                )
+                print(term.move(row, 5 * col_width) + term.center(get_process_mb(stat.sentinel), width=col_width - 1))
                 print(
                     term.move(row, 6 * col_width)
                     + term.center(
@@ -418,20 +296,14 @@ def memory(run_once=False, workers=False, broker=None):
                         result = 0
                     workers_mb += result
                 print(
-                    term.move(row, 7 * col_width)
-                    + term.center(
-                        workers_mb or "NO_PROCESSES_FOUND", width=col_width - 1
-                    )
+                    term.move(row, 7 * col_width) + term.center(workers_mb or "NO_PROCESSES_FOUND", width=col_width - 1)
                 )
                 row += 1
             # each worker's memory usage
             if workers:
                 row += 2
                 col_width = int(term.width / (1 + Conf.WORKERS))
-                print(
-                    term.move(row, 0 * col_width)
-                    + term.black_on_cyan(term.center(_("Id"), width=col_width - 1))
-                )
+                print(term.move(row, 0 * col_width) + term.black_on_cyan(term.center(_("Id"), width=col_width - 1)))
                 for worker_num in range(Conf.WORKERS):
                     print(
                         term.move(row, (worker_num + 1) * col_width)
@@ -444,25 +316,17 @@ def memory(run_once=False, workers=False, broker=None):
                     )
                 row += 2
                 for stat in stats:
-                    print(
-                        term.move(row, 0 * col_width)
-                        + term.center(str(stat.cluster_id)[-8:], width=col_width - 1)
-                    )
+                    print(term.move(row, 0 * col_width) + term.center(str(stat.cluster_id)[-8:], width=col_width - 1))
                     for idx, worker_pid in enumerate(stat.workers):
                         mb_used = get_process_mb(worker_pid)
-                        print(
-                            term.move(row, (idx + 1) * col_width)
-                            + term.center(mb_used, width=col_width - 1)
-                        )
+                        print(term.move(row, (idx + 1) * col_width) + term.center(mb_used, width=col_width - 1))
                     row += 1
             row += 1
             print(
                 term.move(row, 0)
                 + _("Available lowest (%): {} ({})").format(
                     str(MEMORY_AVAILABLE_LOWEST_PERCENTAGE),
-                    MEMORY_AVAILABLE_LOWEST_PERCENTAGE_AT.strftime(
-                        "%Y-%m-%d %H:%M:%S+00:00"
-                    ),
+                    MEMORY_AVAILABLE_LOWEST_PERCENTAGE_AT.strftime("%Y-%m-%d %H:%M:%S+00:00"),
                 )
             )
             # for testing

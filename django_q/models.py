@@ -41,15 +41,9 @@ class Task(models.Model):
     @staticmethod
     def get_result_group(group_id, failures=False):
         if failures:
-            values = Task.objects.filter(group=group_id).values_list(
-                "result", flat=True
-            )
+            values = Task.objects.filter(group=group_id).values_list("result", flat=True)
         else:
-            values = (
-                Task.objects.filter(group=group_id)
-                .exclude(success=False)
-                .values_list("result", flat=True)
-            )
+            values = Task.objects.filter(group=group_id).exclude(success=False).values_list("result", flat=True)
         return decode_results(values)
 
     def group_result(self, failures=False):
@@ -157,9 +151,7 @@ class Schedule(models.Model):
         help_text="e.g. module.tasks.result_function",
     )
     args = models.TextField(null=True, blank=True, help_text=_("e.g. 1, 2, 'John'"))
-    kwargs = models.TextField(
-        null=True, blank=True, help_text=_("e.g. x=1, y=2, name='John'")
-    )
+    kwargs = models.TextField(null=True, blank=True, help_text=_("e.g. x=1, y=2, name='John'"))
     ONCE = "O"
     MINUTES = "I"
     HOURLY = "H"
@@ -180,18 +172,12 @@ class Schedule(models.Model):
         (YEARLY, _("Yearly")),
         (CRON, _("Cron")),
     )
-    schedule_type = models.CharField(
-        max_length=1, choices=TYPE, default=TYPE[0][0], verbose_name=_("Schedule Type")
-    )
+    schedule_type = models.CharField(max_length=1, choices=TYPE, default=TYPE[0][0], verbose_name=_("Schedule Type"))
     minutes = models.PositiveSmallIntegerField(
         null=True, blank=True, help_text=_("Number of minutes for the Minutes type")
     )
-    repeats = models.IntegerField(
-        default=-1, verbose_name=_("Repeats"), help_text=_("n = n times, -1 = forever")
-    )
-    next_run = models.DateTimeField(
-        verbose_name=_("Next Run"), default=timezone.now, null=True
-    )
+    repeats = models.IntegerField(default=-1, verbose_name=_("Repeats"), help_text=_("n = n times, -1 = forever"))
+    next_run = models.DateTimeField(verbose_name=_("Next Run"), default=timezone.now, null=True)
     cron = models.CharField(
         max_length=100,
         null=True,

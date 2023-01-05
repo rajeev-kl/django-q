@@ -93,11 +93,7 @@ class Cluster:
         return True
 
     def sig_handler(self, signum, frame):
-        logger.debug(
-            _(
-                f'{current_process().name} got signal {Conf.SIGNAL_NAMES.get(signum, "UNKNOWN")}'
-            )
-        )
+        logger.debug(_(f'{current_process().name} got signal {Conf.SIGNAL_NAMES.get(signum, "UNKNOWN")}'))
         self.stop()
 
     @property
@@ -120,12 +116,7 @@ class Cluster:
 
     @property
     def is_stopping(self) -> bool:
-        return (
-            self.stop_event
-            and self.start_event
-            and self.start_event.is_set()
-            and self.stop_event.is_set()
-        )
+        return self.stop_event and self.start_event and self.start_event.is_set() and self.stop_event.is_set()
 
     @property
     def has_stopped(self) -> bool:
@@ -157,9 +148,7 @@ class Sentinel:
         self.pool_size = Conf.WORKERS
         self.pool = []
         self.timeout = timeout
-        self.task_queue = (
-            Queue(maxsize=Conf.QUEUE_LIMIT) if Conf.QUEUE_LIMIT else Queue()
-        )
+        self.task_queue = Queue(maxsize=Conf.QUEUE_LIMIT) if Conf.QUEUE_LIMIT else Queue()
         self.result_queue = Queue()
         self.event_out = Event()
         self.monitor = None
@@ -201,9 +190,7 @@ class Sentinel:
         return self.spawn_process(pusher, self.task_queue, self.event_out, self.broker)
 
     def spawn_worker(self):
-        self.spawn_process(
-            worker, self.task_queue, self.result_queue, Value("f", -1), self.timeout
-        )
+        self.spawn_process(worker, self.task_queue, self.result_queue, Value("f", -1), self.timeout)
 
     def spawn_monitor(self) -> Process:
         return self.spawn_process(monitor, self.result_queue, self.broker)
@@ -251,11 +238,7 @@ class Sentinel:
             set_cpu_affinity(Conf.CPU_AFFINITY, [w.pid for w in self.pool])
 
     def guard(self):
-        logger.info(
-            _(
-                f"{current_process().name} guarding cluster {humanize(self.cluster_id.hex)}"
-            )
-        )
+        logger.info(_(f"{current_process().name} guarding cluster {humanize(self.cluster_id.hex)}"))
         self.start_event.set()
         Stat(self).save()
         logger.info(_(f"Q Cluster {humanize(self.cluster_id.hex)} running."))
@@ -398,9 +381,7 @@ def monitor(result_queue: Queue, broker: Broker = None):
     logger.info(_(f"{name} stopped monitoring results"))
 
 
-def worker(
-    task_queue: Queue, result_queue: Queue, timer: Value, timeout: int = Conf.TIMEOUT
-):
+def worker(task_queue: Queue, result_queue: Queue, timer: Value, timeout: int = Conf.TIMEOUT):
     """
     Takes a task from the task queue, tries to execute it and puts the result back in the result queue
     :param timeout: number of seconds wait for a worker to finish.
@@ -474,7 +455,8 @@ def save_task(task, broker: Broker):
     # SAVE LIMIT > 0: Prune database, SAVE_LIMIT 0: No pruning
     close_old_django_connections()
     try:
-        with db.transaction.atomic():
+        database_to_use = {"using": Conf.ORM if Conf.ORM else Schedule.objects.db} if not Conf.HAS_REPLICA else {}
+        with db.transaction.atomic(**database_to_use):
             last = Success.objects.select_for_update().last()
             if task["success"] and 0 < Conf.SAVE_LIMIT <= Success.objects.count():
                 last.delete()
@@ -489,10 +471,7 @@ def save_task(task, broker: Broker):
                 existing_task.attempt_count = existing_task.attempt_count + 1
                 existing_task.save()
 
-            if (
-                Conf.MAX_ATTEMPTS > 0
-                and existing_task.attempt_count >= Conf.MAX_ATTEMPTS
-            ):
+            if Conf.MAX_ATTEMPTS > 0 and existing_task.attempt_count >= Conf.MAX_ATTEMPTS:
                 broker.acknowledge(task["ack_id"])
 
         else:
@@ -501,10 +480,7 @@ def save_task(task, broker: Broker):
             if inspect.isfunction(func):
                 func = f"{func.__module__}.{func.__name__}"
             elif inspect.ismethod(func):
-                func = (
-                    f"{func.__self__.__module__}."
-                    f"{func.__self__.__name__}.{func.__name__}"
-                )
+                func = f"{func.__self__.__module__}." f"{func.__self__.__name__}.{func.__name__}"
             Task.objects.create(
                 id=task["id"],
                 name=task["name"],
@@ -539,10 +515,7 @@ def save_cached(task, broker: Broker):
             if iter_count and len(group_list) == iter_count - 1:
                 group_args = f"{broker.list_key}:{group}:args"
                 # collate the results into a Task result
-                results = [
-                    SignedPackage.loads(broker.cache.get(k))["result"]
-                    for k in group_list
-                ]
+                results = [SignedPackage.loads(broker.cache.get(k))["result"] for k in group_list]
                 results.append(task["result"])
                 task["result"] = results
                 task["id"] = group
@@ -583,15 +556,13 @@ def scheduler(broker: Broker = None):
         broker = get_broker()
     close_old_django_connections()
     try:
-        database_to_use = {"using": Conf.ORM} if not Conf.HAS_REPLICA else {}
+        database_to_use = {"using": Conf.ORM if Conf.ORM else Schedule.objects.db} if not Conf.HAS_REPLICA else {}
         with db.transaction.atomic(**database_to_use):
             for s in (
                 Schedule.objects.select_for_update()
                 .exclude(repeats=0)
                 .filter(next_run__lt=timezone.now())
-                .filter(
-                    db.models.Q(cluster__isnull=True) | db.models.Q(cluster=Conf.PREFIX)
-                )
+                .filter(db.models.Q(cluster__isnull=True) | db.models.Q(cluster=Conf.PREFIX))
             ):
                 args = ()
                 kwargs = {}
@@ -630,23 +601,13 @@ def scheduler(broker: Broker = None):
                             next_run = next_run.shift(years=+1)
                         elif s.schedule_type == s.CRON:
                             if not croniter:
-                                raise ImportError(
-                                    _(
-                                        "Please install croniter to enable cron expressions"
-                                    )
-                                )
-                            next_run = arrow.get(
-                                croniter(s.cron, localtime()).get_next()
-                            )
+                                raise ImportError(_("Please install croniter to enable cron expressions"))
+                            next_run = arrow.get(croniter(s.cron, localtime()).get_next())
                         if Conf.CATCH_UP or next_run > arrow.utcnow():
                             break
                     # arrow always returns a tz aware datetime, and we don't want
                     # this when we explicitly configured django with USE_TZ=False
-                    s.next_run = (
-                        next_run.datetime
-                        if settings.USE_TZ
-                        else next_run.datetime.replace(tzinfo=None)
-                    )
+                    s.next_run = next_run.datetime if settings.USE_TZ else next_run.datetime.replace(tzinfo=None)
                     s.repeats += -1
                 # send it to the cluster
                 scheduled_broker = broker
@@ -661,16 +622,10 @@ def scheduler(broker: Broker = None):
                 # log it
                 if not s.task:
                     logger.error(
-                        _(
-                            f"{current_process().name} failed to create a task from schedule [{s.name or s.id}]"
-                        )
+                        _(f"{current_process().name} failed to create a task from schedule [{s.name or s.id}]")
                     )
                 else:
-                    logger.info(
-                        _(
-                            f"{current_process().name} created a task from schedule [{s.name or s.id}]"
-                        )
-                    )
+                    logger.info(_(f"{current_process().name} created a task from schedule [{s.name or s.id}]"))
                 # default behavior is to delete a ONCE schedule
                 if s.schedule_type == s.ONCE:
                     if s.repeats < 0:
@@ -712,9 +667,7 @@ def set_cpu_affinity(n: int, process_ids: list, actual: bool = not Conf.TESTING)
         return
     # check if the platform supports cpu_affinity
     if actual and not hasattr(psutil.Process(process_ids[0]), "cpu_affinity"):
-        logger.warning(
-            "Faking cpu affinity because it is not supported on this platform"
-        )
+        logger.warning("Faking cpu affinity because it is not supported on this platform")
         actual = False
     # get the available processors
     cpu_list = list(range(psutil.cpu_count()))

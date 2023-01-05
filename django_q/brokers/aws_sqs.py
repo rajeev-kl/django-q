@@ -38,9 +38,7 @@ class Sqs(Broker):
             if not isinstance(wait_time_second, int):
                 raise ValueError("receive_message_wait_time_seconds should be int")
             if wait_time_second > 20:
-                raise ValueError(
-                    "receive_message_wait_time_seconds is invalid. Reason: Must be >= 0 and <= 20"
-                )
+                raise ValueError("receive_message_wait_time_seconds is invalid. Reason: Must be >= 0 and <= 20")
             params.update({"WaitTimeSeconds": wait_time_second})
 
         tasks = self.queue.receive_messages(**params)
